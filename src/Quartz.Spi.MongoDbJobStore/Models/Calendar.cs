@@ -4,6 +4,8 @@ using Quartz.Spi.MongoDbJobStore.Models.Id;
 
 namespace Quartz.Spi.MongoDbJobStore.Models
 {
+    using Quartz.Impl.Calendar;
+
     internal class Calendar
     {
         private static readonly IObjectSerializer ObjectSerializer = new DefaultObjectSerializer();
@@ -23,9 +25,9 @@ namespace Quartz.Spi.MongoDbJobStore.Models
 
         public byte[] Content { get; set; }
 
-        public ICalendar GetCalendar()
+        public BaseCalendar GetCalendar()
         {
-            return ObjectSerializer.DeSerialize<ICalendar>(Content);
+            return ObjectSerializer.DeSerialize<BaseCalendar>(Content);
         }
     }
 }

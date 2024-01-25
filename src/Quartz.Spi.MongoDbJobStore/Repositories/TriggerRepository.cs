@@ -65,14 +65,14 @@ namespace Quartz.Spi.MongoDbJobStore.Repositories
             return await Collection.Find(FilterBuilder.And(
                 FilterBuilder.Eq(trigger => trigger.Id.InstanceName, InstanceName),
                 FilterBuilder.Regex(trigger => trigger.Id.Group, matcher.ToBsonRegularExpression())))
-                .Project(trigger => trigger.Id.GetTriggerKey())
+                .Project(trigger => new TriggerKey(trigger.Id.Name, trigger.Id.Group))
                 .ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<List<TriggerKey>> GetTriggerKeys(Models.TriggerState state)
         {
             return await Collection.Find(trigger => trigger.Id.InstanceName == InstanceName && trigger.State == state)
-                .Project(trigger => trigger.Id.GetTriggerKey())
+                .Project(trigger => new TriggerKey(trigger.Id.Name, trigger.Id.Group))
                 .ToListAsync().ConfigureAwait(false);
         }
 
@@ -113,7 +113,7 @@ namespace Quartz.Spi.MongoDbJobStore.Repositories
                     SortBuilder.Descending(trigger => trigger.Priority)
                     ))
                 .Limit(maxCount)
-                .Project(trigger => trigger.Id.GetTriggerKey())
+                .Project(trigger => new TriggerKey(trigger.Id.Name, trigger.Id.Group))
                 .ToListAsync().ConfigureAwait(false);
         }
 
@@ -236,7 +236,7 @@ namespace Quartz.Spi.MongoDbJobStore.Repositories
                            trigger.MisfireInstruction != MisfireInstruction.IgnoreMisfirePolicy &&
                            trigger.NextFireTime < nextFireTime &&
                            trigger.State == Models.TriggerState.Waiting)
-                .Project(trigger => trigger.Id.GetTriggerKey())
+                .Project(trigger => new TriggerKey(trigger.Id.Name, trigger.Id.Group))
                 .Sort(SortBuilder.Combine(
                     SortBuilder.Ascending(trigger => trigger.NextFireTime),
                     SortBuilder.Descending(trigger => trigger.Priority)

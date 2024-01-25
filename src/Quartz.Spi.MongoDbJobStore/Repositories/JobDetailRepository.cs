@@ -28,7 +28,7 @@ namespace Quartz.Spi.MongoDbJobStore.Repositories
                 await Collection.Find(FilterBuilder.And(
                     FilterBuilder.Eq(detail => detail.Id.InstanceName, InstanceName),
                     FilterBuilder.Regex(detail => detail.Id.Group, matcher.ToBsonRegularExpression())))
-                    .Project(detail => detail.Id.GetJobKey())
+                    .Project(detail => new JobKey(detail.Id.Name, detail.Id.Group))
                     .ToListAsync().ConfigureAwait(false);
         }
 
